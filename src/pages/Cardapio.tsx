@@ -138,9 +138,7 @@ export default function Cardapio() {
 
 Nome: ${customerName}
 Tipo: ${deliveryType === "delivery" ? "Entrega" : "Retirada"}
-Endereço: ${
-        deliveryType === "delivery" ? address : "Retirada no local"
-      }
+Endereço: ${deliveryType === "delivery" ? address : "Retirada no local"}
 
 Produtos:
 ${productsText}
@@ -230,116 +228,139 @@ Total: ${formatCurrency(total)}`
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white">
-      <header className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-amber-950 px-5 py-10">
-        <div className="mx-auto max-w-7xl">
-          <span className="rounded-full border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm font-bold text-amber-300">
-            Cardápio digital da adega
-          </span>
+    <main
+      className="min-h-screen bg-[#111111] text-zinc-100"
+      style={{
+        fontFamily:
+          '"Trebuchet MS", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+      }}
+    >
+      <header className="border-b border-zinc-800 bg-[#151515]">
+        <div className="mx-auto max-w-7xl px-5 py-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-amber-400">
+                Adega VG
+              </p>
 
-          <h1 className="mt-6 max-w-3xl text-4xl font-black md:text-6xl">
-            Adega VG
-          </h1>
+              <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
+                Bebidas para entrega e retirada
+              </h1>
 
-          <p className="mt-4 max-w-2xl text-zinc-300">
-            Escolha os produtos, monte seu carrinho e finalize pelo WhatsApp. O
-            pedido também é salvo no banco de dados.
-          </p>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-400">
+                Escolha seus produtos, monte o pedido e finalize pelo WhatsApp.
+                O estoque e os pedidos são atualizados pelo sistema.
+              </p>
+            </div>
 
-          <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <span className="rounded-full bg-white/10 px-4 py-2">
-              Entrega no bairro
-            </span>
-            <span className="rounded-full bg-white/10 px-4 py-2">
-              Retirada no local
-            </span>
-            <span className="rounded-full bg-white/10 px-4 py-2">
-              Cupom: ADEGA10
-            </span>
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4 text-sm text-zinc-300">
+              <p className="font-semibold text-zinc-100">Atendimento online</p>
+              <p className="mt-1">Entrega no bairro ou retirada no balcão.</p>
+            </div>
           </div>
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-5 py-8 lg:grid-cols-[1fr_380px]">
+      <section className="mx-auto grid max-w-7xl gap-6 px-5 py-7 lg:grid-cols-[1fr_360px]">
         <div>
-          <div className="sticky top-0 z-10 rounded-3xl border border-white/10 bg-zinc-950/90 p-4 backdrop-blur">
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar produto..."
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-amber-400"
-            />
+          <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-4">
+            <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Buscar por nome do produto"
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
+              />
 
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`whitespace-nowrap rounded-2xl px-4 py-3 text-sm font-bold ${
-                    selectedCategory === category
-                      ? "bg-amber-400 text-zinc-950"
-                      : "bg-white/5 text-zinc-300"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+              <div className="flex gap-2 overflow-x-auto pb-1 md:max-w-xl">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`whitespace-nowrap rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                      selectedCategory === category
+                        ? "bg-amber-400 text-zinc-950"
+                        : "bg-zinc-900 text-zinc-300 hover:bg-zinc-800"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {loading ? (
-            <p className="mt-8 text-zinc-400">Carregando produtos...</p>
+            <div className="mt-6 rounded-2xl border border-zinc-800 bg-[#181818] p-6 text-zinc-400">
+              Carregando produtos...
+            </div>
           ) : (
             <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {filteredProducts.map((product) => (
                 <article
                   key={product.id}
-                  className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl"
+                  className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#181818] transition hover:-translate-y-1 hover:border-amber-500/50"
                 >
-                  <div className="relative h-44">
+                  <div className="relative h-44 bg-zinc-900">
                     <img
                       src={
                         product.image_url ||
                         "https://images.unsplash.com/photo-1516997121675-4c2d1684aa3e?q=80&w=800&auto=format&fit=crop"
                       }
                       alt={product.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover opacity-90"
                     />
 
                     {product.highlight && (
-                      <span className="absolute left-3 top-3 rounded-full bg-amber-400 px-3 py-1 text-xs font-black text-zinc-950">
-                        Mais pedido
+                      <span className="absolute left-3 top-3 rounded-lg bg-amber-400 px-3 py-1 text-xs font-bold text-zinc-950">
+                        Destaque
                       </span>
                     )}
                   </div>
 
                   <div className="p-5">
-                    <p className="text-sm font-bold text-amber-300">
-                      {product.category}
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.18em] text-amber-400">
+                          {product.category}
+                        </p>
+
+                        <h2 className="mt-2 text-xl font-semibold leading-tight text-zinc-50">
+                          {product.name}
+                        </h2>
+                      </div>
+                    </div>
+
+                    <p className="mt-3 min-h-10 text-sm leading-relaxed text-zinc-400">
+                      {product.description || "Produto disponível no cardápio."}
                     </p>
 
-                    <h2 className="mt-1 text-xl font-black">
-                      {product.name}
-                    </h2>
+                    <div className="mt-5 flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-2xl font-semibold text-amber-300">
+                          {formatCurrency(Number(product.price))}
+                        </p>
 
-                    <p className="mt-2 min-h-10 text-sm text-zinc-400">
-                      {product.description}
-                    </p>
-
-                    <p className="mt-4 text-2xl font-black text-amber-300">
-                      {formatCurrency(Number(product.price))}
-                    </p>
-
-                    <p className="mt-1 text-sm text-zinc-500">
-                      Estoque: {product.stock}
-                    </p>
+                        <p
+                          className={`mt-1 text-xs ${
+                            product.stock <= 5
+                              ? "text-red-300"
+                              : "text-zinc-500"
+                          }`}
+                        >
+                          {product.stock > 0
+                            ? `${product.stock} unidades disponíveis`
+                            : "Indisponível no momento"}
+                        </p>
+                      </div>
+                    </div>
 
                     <button
                       onClick={() => addToCart(product)}
                       disabled={product.stock <= 0}
-                      className="mt-5 w-full rounded-2xl bg-amber-400 px-4 py-3 font-black text-zinc-950 hover:bg-amber-300 disabled:bg-zinc-700 disabled:text-zinc-400"
+                      className="mt-5 w-full rounded-xl bg-amber-400 px-4 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
                     >
-                      Adicionar
+                      Adicionar ao pedido
                     </button>
                   </div>
                 </article>
@@ -348,36 +369,40 @@ Total: ${formatCurrency(total)}`
           )}
         </div>
 
-        <aside className="h-fit rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl lg:sticky lg:top-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-black">Carrinho 🛒</h2>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-sm">
-              {cart.length} itens
-            </span>
+        <aside className="h-fit rounded-2xl border border-zinc-800 bg-[#181818] p-5 lg:sticky lg:top-5">
+          <div className="border-b border-zinc-800 pb-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Seu pedido</h2>
+
+              <span className="rounded-lg bg-zinc-900 px-3 py-1 text-sm text-zinc-300">
+                {cart.length} itens
+              </span>
+            </div>
+
+            <p className="mt-2 text-sm text-zinc-500">
+              Revise os produtos antes de finalizar.
+            </p>
           </div>
 
           <div className="mt-5 space-y-3">
             {cart.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-zinc-400">
-                Seu carrinho está vazio.
+              <div className="rounded-xl border border-dashed border-zinc-700 p-5 text-center text-sm text-zinc-500">
+                Nenhum produto selecionado.
               </div>
             ) : (
               cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl bg-white/5 p-3"
-                >
+                <div key={item.id} className="rounded-xl bg-zinc-950 p-3">
                   <div className="flex justify-between gap-3">
                     <div>
-                      <p className="font-bold">{item.name}</p>
-                      <p className="text-sm text-amber-300">
+                      <p className="font-semibold text-zinc-100">{item.name}</p>
+                      <p className="mt-1 text-sm text-amber-300">
                         {formatCurrency(Number(item.price))}
                       </p>
                     </div>
 
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-red-300"
+                      className="text-sm text-red-300 hover:text-red-200"
                     >
                       Remover
                     </button>
@@ -386,16 +411,18 @@ Total: ${formatCurrency(total)}`
                   <div className="mt-3 flex items-center gap-3">
                     <button
                       onClick={() => decreaseItem(item.id)}
-                      className="h-8 w-8 rounded-lg bg-white/10 font-bold"
+                      className="h-8 w-8 rounded-lg bg-zinc-800 font-bold hover:bg-zinc-700"
                     >
                       -
                     </button>
 
-                    <span className="font-bold">{item.quantity}</span>
+                    <span className="min-w-6 text-center font-semibold">
+                      {item.quantity}
+                    </span>
 
                     <button
                       onClick={() => addToCart(item)}
-                      className="h-8 w-8 rounded-lg bg-white/10 font-bold"
+                      className="h-8 w-8 rounded-lg bg-zinc-800 font-bold hover:bg-zinc-700"
                     >
                       +
                     </button>
@@ -405,13 +432,13 @@ Total: ${formatCurrency(total)}`
             )}
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-2 rounded-2xl bg-white/5 p-2">
+          <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-zinc-950 p-2">
             <button
               onClick={() => setDeliveryType("delivery")}
-              className={`rounded-xl px-3 py-3 text-sm font-bold ${
+              className={`rounded-lg px-3 py-3 text-sm font-semibold transition ${
                 deliveryType === "delivery"
                   ? "bg-amber-400 text-zinc-950"
-                  : "text-zinc-300"
+                  : "text-zinc-400 hover:bg-zinc-900"
               }`}
             >
               Entrega
@@ -419,10 +446,10 @@ Total: ${formatCurrency(total)}`
 
             <button
               onClick={() => setDeliveryType("pickup")}
-              className={`rounded-xl px-3 py-3 text-sm font-bold ${
+              className={`rounded-lg px-3 py-3 text-sm font-semibold transition ${
                 deliveryType === "pickup"
                   ? "bg-amber-400 text-zinc-950"
-                  : "text-zinc-300"
+                  : "text-zinc-400 hover:bg-zinc-900"
               }`}
             >
               Retirada
@@ -433,8 +460,8 @@ Total: ${formatCurrency(total)}`
             <input
               value={customerName}
               onChange={(event) => setCustomerName(event.target.value)}
-              placeholder="Seu nome"
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none"
+              placeholder="Nome para o pedido"
+              className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500 focus:border-amber-400"
             />
 
             {deliveryType === "delivery" && (
@@ -442,7 +469,7 @@ Total: ${formatCurrency(total)}`
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
                 placeholder="Endereço de entrega"
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none"
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500 focus:border-amber-400"
               />
             )}
 
@@ -450,32 +477,30 @@ Total: ${formatCurrency(total)}`
               value={coupon}
               onChange={(event) => setCoupon(event.target.value)}
               placeholder="Cupom de desconto"
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none"
+              className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none placeholder:text-zinc-500 focus:border-amber-400"
             />
           </div>
 
-          <div className="mt-5 space-y-2 rounded-2xl bg-zinc-950/70 p-4 text-sm">
-            <div className="flex justify-between">
+          <div className="mt-5 space-y-2 rounded-xl bg-zinc-950 p-4 text-sm">
+            <div className="flex justify-between text-zinc-400">
               <span>Subtotal</span>
               <span>{formatCurrency(subtotal)}</span>
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between text-zinc-400">
               <span>Entrega</span>
               <span>{formatCurrency(deliveryFee)}</span>
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between text-zinc-400">
               <span>Desconto</span>
               <span>- {formatCurrency(discount)}</span>
             </div>
 
-            <div className="mt-3 border-t border-white/10 pt-3">
-              <div className="flex justify-between text-lg font-black">
+            <div className="mt-3 border-t border-zinc-800 pt-3">
+              <div className="flex justify-between text-lg font-semibold">
                 <span>Total</span>
-                <span className="text-amber-300">
-                  {formatCurrency(total)}
-                </span>
+                <span className="text-amber-300">{formatCurrency(total)}</span>
               </div>
             </div>
           </div>
@@ -483,13 +508,14 @@ Total: ${formatCurrency(total)}`
           <button
             onClick={finishOrder}
             disabled={cart.length === 0 || sendingOrder}
-            className="mt-5 w-full rounded-2xl bg-green-500 px-5 py-4 font-black text-white hover:bg-green-400 disabled:bg-zinc-700 disabled:text-zinc-400"
+            className="mt-5 w-full rounded-xl bg-green-600 px-5 py-4 text-sm font-bold text-white transition hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
           >
-            {sendingOrder ? "Salvando pedido..." : "Finalizar pelo WhatsApp"}
+            {sendingOrder ? "Enviando pedido..." : "Finalizar pelo WhatsApp"}
           </button>
 
-          <p className="mt-3 text-center text-xs text-zinc-500">
-            O pedido será salvo no Supabase e aberto no WhatsApp.
+          <p className="mt-3 text-center text-xs leading-relaxed text-zinc-500">
+            O pedido será registrado no sistema e aberto no WhatsApp para
+            confirmação.
           </p>
         </aside>
       </section>

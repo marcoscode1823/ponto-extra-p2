@@ -34,17 +34,18 @@ function createMapsLink(address: string | null) {
   )}`;
 }
 
+function getStatusLabel(status: string) {
+  if (status === "a caminho") return "A caminho";
+  if (status === "entregue") return "Entregue";
+  return "Pendente";
+}
+
 export default function Motoboy() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
   async function loadOrders() {
-    if (!supabase) {
-      alert("Supabase não configurado.");
-      return;
-    }
-
     setLoading(true);
 
     const { data, error } = await supabase
@@ -69,11 +70,6 @@ export default function Motoboy() {
   }, []);
 
   async function updateOrderStatus(orderId: number, newStatus: string) {
-    if (!supabase) {
-      alert("Supabase não configurado.");
-      return;
-    }
-
     setUpdatingOrderId(orderId);
 
     const { error } = await supabase
@@ -96,52 +92,76 @@ export default function Motoboy() {
   const deliveredOrders = orders.filter((order) => order.status === "entregue");
 
   return (
-    <main className="min-h-screen bg-zinc-950 p-5 text-white">
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-8 rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 to-amber-950/60 p-6">
-          <h1 className="text-4xl font-black">Painel do Motoboy 🛵</h1>
+    <main
+      className="min-h-screen bg-[#111111] text-zinc-100"
+      style={{
+        fontFamily:
+          '"Trebuchet MS", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+      }}
+    >
+      <header className="border-b border-zinc-800 bg-[#151515]">
+        <div className="mx-auto max-w-6xl px-5 py-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-amber-400">
+                Área de entrega
+              </p>
 
-          <p className="mt-2 text-zinc-300">
-            Pedidos de entrega em ordem de chegada, com rota pelo Google Maps.
-          </p>
+              <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+                Painel do motoboy
+              </h1>
 
-          <div className="mt-5 flex flex-wrap gap-3">
-            <div className="rounded-2xl bg-white/10 px-4 py-3">
-              <p className="text-sm text-zinc-400">Entregas pendentes</p>
-              <p className="text-2xl font-black text-amber-300">
-                {pendingOrders.length}
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-400">
+                Acompanhe os pedidos de entrega por ordem de chegada, abra a
+                rota no Google Maps e atualize o andamento da entrega.
               </p>
             </div>
 
-            <div className="rounded-2xl bg-white/10 px-4 py-3">
-              <p className="text-sm text-zinc-400">Entregues</p>
-              <p className="text-2xl font-black text-green-400">
-                {deliveredOrders.length}
-              </p>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4">
+                <p className="text-zinc-500">Pendentes</p>
+                <p className="mt-1 text-3xl font-semibold text-amber-300">
+                  {pendingOrders.length}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-4">
+                <p className="text-zinc-500">Entregues</p>
+                <p className="mt-1 text-3xl font-semibold text-green-400">
+                  {deliveredOrders.length}
+                </p>
+              </div>
             </div>
           </div>
 
           <button
             onClick={loadOrders}
-            className="mt-5 rounded-2xl bg-amber-400 px-5 py-3 font-bold text-zinc-950 hover:bg-amber-300"
+            className="mt-6 rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300"
           >
             Atualizar entregas
           </button>
-        </header>
+        </div>
+      </header>
 
+      <section className="mx-auto max-w-6xl px-5 py-7">
         {loading ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-zinc-300">
+          <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-6 text-zinc-400">
             Carregando pedidos de entrega...
           </div>
         ) : (
           <>
             <section>
-              <h2 className="mb-4 text-2xl font-black">
-                Fila de entregas
-              </h2>
+              <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold">Fila de entregas</h2>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Ordem baseada no horário em que o pedido foi realizado.
+                  </p>
+                </div>
+              </div>
 
               {pendingOrders.length === 0 ? (
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-zinc-400">
+                <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-6 text-zinc-400">
                   Nenhuma entrega pendente no momento.
                 </div>
               ) : (
@@ -149,43 +169,57 @@ export default function Motoboy() {
                   {pendingOrders.map((order, index) => (
                     <article
                       key={order.id}
-                      className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-xl"
+                      className="rounded-2xl border border-zinc-800 bg-[#181818] p-5 transition hover:border-amber-500/50"
                     >
-                      <div className="flex flex-col justify-between gap-4 md:flex-row">
+                      <div className="flex flex-col justify-between gap-5 md:flex-row">
                         <div>
-                          <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-black text-zinc-950">
-                            #{index + 1} na fila
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="rounded-lg bg-amber-400 px-3 py-1 text-xs font-bold text-zinc-950">
+                              {index + 1}º da fila
+                            </span>
 
-                          <h3 className="mt-4 text-2xl font-black">
-                            Pedido #{order.id} — {order.customer_name}
+                            <span
+                              className={`rounded-lg px-3 py-1 text-xs font-bold ${
+                                order.status === "a caminho"
+                                  ? "bg-blue-500/15 text-blue-300"
+                                  : "bg-zinc-900 text-zinc-300"
+                              }`}
+                            >
+                              {getStatusLabel(order.status)}
+                            </span>
+                          </div>
+
+                          <h3 className="mt-4 text-2xl font-semibold text-zinc-50">
+                            Pedido #{order.id}
                           </h3>
 
-                          <p className="mt-1 text-sm text-zinc-400">
-                            Feito em: {formatDate(order.created_at)}
+                          <p className="mt-1 text-zinc-300">
+                            {order.customer_name}
+                          </p>
+
+                          <p className="mt-2 text-sm text-zinc-500">
+                            Realizado em {formatDate(order.created_at)}
                           </p>
                         </div>
 
                         <div className="md:text-right">
-                          <p className="text-2xl font-black text-green-400">
+                          <p className="text-sm text-zinc-500">Valor</p>
+                          <p className="mt-1 text-2xl font-semibold text-green-400">
                             {formatCurrency(Number(order.total))}
                           </p>
 
-                          <span
-                            className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-bold ${
-                              order.status === "a caminho"
-                                ? "bg-blue-400/20 text-blue-300"
-                                : "bg-amber-400/20 text-amber-300"
-                            }`}
-                          >
-                            {order.status}
-                          </span>
+                          <p className="mt-2 text-sm text-zinc-500">
+                            Pagamento: {order.payment_method}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="mt-5 rounded-2xl bg-zinc-950/70 p-4">
-                        <p className="text-sm text-zinc-400">Endereço</p>
-                        <p className="mt-1 font-bold">
+                      <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-amber-400">
+                          Endereço de entrega
+                        </p>
+
+                        <p className="mt-2 font-semibold text-zinc-100">
                           {order.address || "Endereço não informado"}
                         </p>
                       </div>
@@ -195,7 +229,7 @@ export default function Motoboy() {
                           href={createMapsLink(order.address)}
                           target="_blank"
                           rel="noreferrer"
-                          className="rounded-2xl bg-green-500 px-4 py-3 text-center font-black text-white hover:bg-green-400"
+                          className="rounded-xl bg-green-600 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-green-500"
                         >
                           Abrir rota
                         </a>
@@ -205,7 +239,7 @@ export default function Motoboy() {
                             updateOrderStatus(order.id, "a caminho")
                           }
                           disabled={updatingOrderId === order.id}
-                          className="rounded-2xl bg-blue-500 px-4 py-3 font-black text-white hover:bg-blue-400 disabled:bg-zinc-700"
+                          className="rounded-xl bg-zinc-900 px-4 py-3 text-sm font-bold text-zinc-100 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
                         >
                           Marcar a caminho
                         </button>
@@ -215,7 +249,7 @@ export default function Motoboy() {
                             updateOrderStatus(order.id, "entregue")
                           }
                           disabled={updatingOrderId === order.id}
-                          className="rounded-2xl bg-amber-400 px-4 py-3 font-black text-zinc-950 hover:bg-amber-300 disabled:bg-zinc-700 disabled:text-zinc-400"
+                          className="rounded-xl bg-amber-400 px-4 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
                         >
                           Marcar entregue
                         </button>
@@ -227,12 +261,18 @@ export default function Motoboy() {
             </section>
 
             <section className="mt-10">
-              <h2 className="mb-4 text-2xl font-black">
-                Entregas concluídas
-              </h2>
+              <div className="mb-4">
+                <h2 className="text-2xl font-semibold">
+                  Entregas concluídas
+                </h2>
+
+                <p className="mt-1 text-sm text-zinc-500">
+                  Pedidos que já foram finalizados pelo entregador.
+                </p>
+              </div>
 
               {deliveredOrders.length === 0 ? (
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-zinc-400">
+                <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-6 text-zinc-400">
                   Nenhuma entrega concluída ainda.
                 </div>
               ) : (
@@ -240,11 +280,15 @@ export default function Motoboy() {
                   {deliveredOrders.map((order) => (
                     <article
                       key={order.id}
-                      className="rounded-3xl border border-white/10 bg-white/5 p-5 opacity-80"
+                      className="rounded-2xl border border-zinc-800 bg-[#181818] p-5 opacity-90"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <h3 className="text-xl font-black">
+                          <p className="text-sm uppercase tracking-[0.18em] text-green-400">
+                            Entregue
+                          </p>
+
+                          <h3 className="mt-2 text-xl font-semibold text-zinc-50">
                             Pedido #{order.id}
                           </h3>
 
@@ -252,23 +296,21 @@ export default function Motoboy() {
                             {order.customer_name}
                           </p>
 
-                          <p className="mt-1 text-sm text-zinc-500">
+                          <p className="mt-2 text-sm text-zinc-500">
                             {formatDate(order.created_at)}
                           </p>
                         </div>
 
-                        <span className="rounded-full bg-green-400/20 px-3 py-1 text-xs font-bold text-green-300">
-                          entregue
-                        </span>
+                        <p className="text-right text-lg font-semibold text-green-400">
+                          {formatCurrency(Number(order.total))}
+                        </p>
                       </div>
 
-                      <p className="mt-4 text-sm text-zinc-400">
-                        {order.address || "Endereço não informado"}
-                      </p>
-
-                      <p className="mt-3 text-lg font-black text-green-400">
-                        {formatCurrency(Number(order.total))}
-                      </p>
+                      <div className="mt-4 rounded-xl bg-zinc-950 p-4">
+                        <p className="text-sm text-zinc-400">
+                          {order.address || "Endereço não informado"}
+                        </p>
+                      </div>
                     </article>
                   ))}
                 </div>
@@ -276,7 +318,7 @@ export default function Motoboy() {
             </section>
           </>
         )}
-      </div>
+      </section>
     </main>
   );
 }

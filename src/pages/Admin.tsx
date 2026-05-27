@@ -63,11 +63,6 @@ export default function Admin() {
   });
 
   async function loadData() {
-    if (!supabase) {
-      alert("Supabase não configurado.");
-      return;
-    }
-
     setLoading(true);
 
     const { data: productsData, error: productsError } = await supabase
@@ -100,11 +95,6 @@ export default function Admin() {
   }, []);
 
   async function createProduct() {
-    if (!supabase) {
-      alert("Supabase não configurado.");
-      return;
-    }
-
     if (!newProduct.name.trim()) {
       alert("Informe o nome do produto.");
       return;
@@ -160,12 +150,11 @@ export default function Admin() {
     loadData();
   }
 
-  async function updateStock(productId: number, currentStock: number, amount: number) {
-    if (!supabase) {
-      alert("Supabase não configurado.");
-      return;
-    }
-
+  async function updateStock(
+    productId: number,
+    currentStock: number,
+    amount: number
+  ) {
     const newStock = Math.max(currentStock + amount, 0);
 
     const { error } = await supabase
@@ -183,11 +172,6 @@ export default function Admin() {
   }
 
   async function toggleProductActive(productId: number, currentActive: boolean) {
-    if (!supabase) {
-      alert("Supabase não configurado.");
-      return;
-    }
-
     const { error } = await supabase
       .from("products")
       .update({ active: !currentActive })
@@ -215,63 +199,105 @@ export default function Admin() {
     (order) => order.delivery_type === "Retirada"
   ).length;
 
+  const produtosAtivos = products.filter((product) => product.active).length;
+
   return (
-    <main className="min-h-screen bg-zinc-100 p-5 text-zinc-950">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8 rounded-3xl bg-zinc-950 p-6 text-white">
-          <h1 className="text-4xl font-black">Painel Admin 📦</h1>
+    <main
+      className="min-h-screen bg-[#111111] text-zinc-100"
+      style={{
+        fontFamily:
+          '"Trebuchet MS", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+      }}
+    >
+      <header className="border-b border-zinc-800 bg-[#151515]">
+        <div className="mx-auto max-w-7xl px-5 py-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-amber-400">
+                Administração
+              </p>
 
-          <p className="mt-2 text-zinc-300">
-            Controle de pedidos, vendas, cadastro de produtos e estoque da adega.
-          </p>
+              <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+                Painel da adega
+              </h1>
 
-          <button
-            onClick={loadData}
-            className="mt-5 rounded-2xl bg-amber-400 px-5 py-3 font-bold text-zinc-950 hover:bg-amber-300"
-          >
-            Atualizar dados
-          </button>
-        </header>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-400">
+                Acompanhe os pedidos, cadastre produtos e controle o estoque
+                que aparece no cardápio digital.
+              </p>
+            </div>
 
+            <button
+              onClick={loadData}
+              className="w-fit rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300"
+            >
+              Atualizar dados
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-7xl px-5 py-7">
         {loading ? (
-          <p>Carregando dados do banco...</p>
+          <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-6 text-zinc-400">
+            Carregando dados do sistema...
+          </div>
         ) : (
           <>
             <section className="grid gap-4 md:grid-cols-4">
-              <div className="rounded-3xl bg-white p-5 shadow">
+              <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-5">
                 <p className="text-sm text-zinc-500">Total vendido</p>
-                <p className="mt-2 text-3xl font-black text-green-700">
+                <p className="mt-2 text-3xl font-semibold text-green-400">
                   {formatCurrency(totalVendido)}
                 </p>
               </div>
 
-              <div className="rounded-3xl bg-white p-5 shadow">
+              <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-5">
                 <p className="text-sm text-zinc-500">Pedidos</p>
-                <p className="mt-2 text-3xl font-black">{orders.length}</p>
+                <p className="mt-2 text-3xl font-semibold text-zinc-100">
+                  {orders.length}
+                </p>
               </div>
 
-              <div className="rounded-3xl bg-white p-5 shadow">
+              <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-5">
                 <p className="text-sm text-zinc-500">Entregas</p>
-                <p className="mt-2 text-3xl font-black">{pedidosEntrega}</p>
+                <p className="mt-2 text-3xl font-semibold text-amber-300">
+                  {pedidosEntrega}
+                </p>
               </div>
 
-              <div className="rounded-3xl bg-white p-5 shadow">
-                <p className="text-sm text-zinc-500">Retiradas</p>
-                <p className="mt-2 text-3xl font-black">{pedidosRetirada}</p>
+              <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-5">
+                <p className="text-sm text-zinc-500">Produtos ativos</p>
+                <p className="mt-2 text-3xl font-semibold text-zinc-100">
+                  {produtosAtivos}
+                </p>
               </div>
             </section>
 
-            <section className="mt-8 rounded-3xl bg-white p-5 shadow">
-              <h2 className="text-2xl font-black">Cadastrar novo produto</h2>
+            <section className="mt-7 rounded-2xl border border-zinc-800 bg-[#181818] p-5">
+              <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold">
+                    Cadastrar produto
+                  </h2>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Os produtos ativos aparecem automaticamente no cardápio.
+                  </p>
+                </div>
 
-              <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <span className="rounded-lg bg-zinc-950 px-3 py-2 text-xs text-zinc-400">
+                  Banco: products
+                </span>
+              </div>
+
+              <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 <input
                   value={newProduct.name}
                   onChange={(event) =>
                     setNewProduct({ ...newProduct, name: event.target.value })
                   }
                   placeholder="Nome do produto"
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-amber-500"
+                  className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
                 />
 
                 <input
@@ -283,7 +309,7 @@ export default function Admin() {
                     })
                   }
                   placeholder="Categoria"
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-amber-500"
+                  className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
                 />
 
                 <input
@@ -294,7 +320,7 @@ export default function Admin() {
                   placeholder="Preço"
                   type="number"
                   step="0.01"
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-amber-500"
+                  className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
                 />
 
                 <input
@@ -304,7 +330,7 @@ export default function Admin() {
                   }
                   placeholder="Estoque inicial"
                   type="number"
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-amber-500"
+                  className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
                 />
 
                 <input
@@ -316,7 +342,7 @@ export default function Admin() {
                     })
                   }
                   placeholder="URL da imagem"
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-amber-500"
+                  className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
                 />
 
                 <input
@@ -328,122 +354,158 @@ export default function Admin() {
                     })
                   }
                   placeholder="Descrição"
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-amber-500"
+                  className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-amber-400"
                 />
               </div>
 
               <button
                 onClick={createProduct}
                 disabled={savingProduct}
-                className="mt-5 rounded-2xl bg-zinc-950 px-5 py-3 font-bold text-white hover:bg-zinc-800 disabled:bg-zinc-400"
+                className="mt-5 rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
               >
                 {savingProduct ? "Cadastrando..." : "Cadastrar produto"}
               </button>
             </section>
 
-            <section className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-3xl bg-white p-5 shadow">
-                <h2 className="text-2xl font-black">Pedidos recentes</h2>
+            <section className="mt-7 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+              <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-5">
+                <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold">
+                      Pedidos recentes
+                    </h2>
+                    <p className="mt-1 text-sm text-zinc-500">
+                      Histórico dos pedidos recebidos pelo cardápio.
+                    </p>
+                  </div>
+
+                  <span className="rounded-lg bg-zinc-950 px-3 py-2 text-xs text-zinc-400">
+                    Retiradas: {pedidosRetirada}
+                  </span>
+                </div>
 
                 <div className="mt-5 space-y-4">
                   {orders.length === 0 ? (
-                    <p className="text-zinc-500">Nenhum pedido encontrado.</p>
+                    <div className="rounded-xl border border-dashed border-zinc-700 p-5 text-center text-sm text-zinc-500">
+                      Nenhum pedido encontrado.
+                    </div>
                   ) : (
                     orders.map((order) => (
-                      <div
+                      <article
                         key={order.id}
-                        className="rounded-2xl border border-zinc-200 p-4"
+                        className="rounded-xl border border-zinc-800 bg-zinc-950 p-4"
                       >
-                        <div className="flex flex-col justify-between gap-2 md:flex-row">
+                        <div className="flex flex-col justify-between gap-3 md:flex-row">
                           <div>
-                            <p className="text-lg font-black">
-                              Pedido #{order.id} — {order.customer_name}
+                            <p className="text-lg font-semibold text-zinc-50">
+                              Pedido #{order.id}
                             </p>
 
-                            <p className="text-sm text-zinc-500">
+                            <p className="mt-1 text-zinc-300">
+                              {order.customer_name}
+                            </p>
+
+                            <p className="mt-2 text-sm text-zinc-500">
                               {formatDate(order.created_at)}
                             </p>
                           </div>
 
-                          <div className="text-left md:text-right">
-                            <p className="text-xl font-black text-green-700">
+                          <div className="md:text-right">
+                            <p className="text-xl font-semibold text-green-400">
                               {formatCurrency(Number(order.total))}
                             </p>
 
-                            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">
+                            <span className="mt-2 inline-block rounded-lg bg-amber-400/15 px-3 py-1 text-xs font-bold text-amber-300">
                               {order.status}
                             </span>
                           </div>
                         </div>
 
-                        <div className="mt-3 grid gap-2 text-sm text-zinc-600 md:grid-cols-2">
+                        <div className="mt-4 grid gap-2 text-sm text-zinc-400 md:grid-cols-2">
                           <p>
-                            <strong>Tipo:</strong> {order.delivery_type}
+                            <strong className="text-zinc-200">Tipo:</strong>{" "}
+                            {order.delivery_type}
                           </p>
 
                           <p>
-                            <strong>Pagamento:</strong> {order.payment_method}
+                            <strong className="text-zinc-200">
+                              Pagamento:
+                            </strong>{" "}
+                            {order.payment_method}
                           </p>
 
                           <p>
-                            <strong>Endereço:</strong>{" "}
+                            <strong className="text-zinc-200">
+                              Endereço:
+                            </strong>{" "}
                             {order.address || "Retirada no local"}
                           </p>
 
                           <p>
-                            <strong>Desconto:</strong>{" "}
+                            <strong className="text-zinc-200">
+                              Desconto:
+                            </strong>{" "}
                             {formatCurrency(Number(order.discount))}
                           </p>
                         </div>
-                      </div>
+                      </article>
                     ))
                   )}
                 </div>
               </div>
 
-              <div className="rounded-3xl bg-white p-5 shadow">
-                <h2 className="text-2xl font-black">Controle de estoque</h2>
+              <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-5">
+                <div>
+                  <h2 className="text-2xl font-semibold">
+                    Controle de estoque
+                  </h2>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Ajuste a quantidade e a visibilidade dos produtos.
+                  </p>
+                </div>
 
                 <div className="mt-5 space-y-3">
                   {products.map((product) => (
-                    <div
+                    <article
                       key={product.id}
-                      className="rounded-2xl border border-zinc-200 p-4"
+                      className="rounded-xl border border-zinc-800 bg-zinc-950 p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-black">{product.name}</p>
+                          <p className="font-semibold text-zinc-50">
+                            {product.name}
+                          </p>
 
-                          <p className="text-sm text-zinc-500">
+                          <p className="mt-1 text-sm text-zinc-500">
                             {product.category}
                           </p>
 
-                          <p className="mt-1 text-sm">
+                          <p className="mt-2 text-sm text-amber-300">
                             {formatCurrency(Number(product.price))}
                           </p>
                         </div>
 
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-bold ${
+                          className={`rounded-lg px-3 py-1 text-xs font-bold ${
                             product.active
-                              ? "bg-green-100 text-green-700"
-                              : "bg-zinc-200 text-zinc-600"
+                              ? "bg-green-500/15 text-green-300"
+                              : "bg-zinc-800 text-zinc-400"
                           }`}
                         >
                           {product.active ? "Ativo" : "Inativo"}
                         </span>
                       </div>
 
-                      <div className="mt-4 flex items-center justify-between rounded-2xl bg-zinc-100 p-3">
-                        <span className="font-bold">
+                      <div className="mt-4 flex items-center justify-between rounded-xl border border-zinc-800 bg-[#181818] p-3">
+                        <span className="font-semibold">
                           Estoque: {product.stock}
                         </span>
 
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-bold ${
+                          className={`rounded-lg px-3 py-1 text-xs font-bold ${
                             product.stock <= 5
-                              ? "bg-red-100 text-red-700"
-                              : "bg-green-100 text-green-700"
+                              ? "bg-red-500/15 text-red-300"
+                              : "bg-green-500/15 text-green-300"
                           }`}
                         >
                           {product.stock <= 5 ? "Baixo estoque" : "OK"}
@@ -455,7 +517,7 @@ export default function Admin() {
                           onClick={() =>
                             updateStock(product.id, product.stock, -10)
                           }
-                          className="rounded-xl bg-red-100 py-2 text-sm font-bold text-red-700 hover:bg-red-200"
+                          className="rounded-lg bg-red-500/10 py-2 text-sm font-bold text-red-300 transition hover:bg-red-500/20"
                         >
                           -10
                         </button>
@@ -464,7 +526,7 @@ export default function Admin() {
                           onClick={() =>
                             updateStock(product.id, product.stock, -1)
                           }
-                          className="rounded-xl bg-red-100 py-2 text-sm font-bold text-red-700 hover:bg-red-200"
+                          className="rounded-lg bg-red-500/10 py-2 text-sm font-bold text-red-300 transition hover:bg-red-500/20"
                         >
                           -1
                         </button>
@@ -473,7 +535,7 @@ export default function Admin() {
                           onClick={() =>
                             updateStock(product.id, product.stock, 1)
                           }
-                          className="rounded-xl bg-green-100 py-2 text-sm font-bold text-green-700 hover:bg-green-200"
+                          className="rounded-lg bg-green-500/10 py-2 text-sm font-bold text-green-300 transition hover:bg-green-500/20"
                         >
                           +1
                         </button>
@@ -482,7 +544,7 @@ export default function Admin() {
                           onClick={() =>
                             updateStock(product.id, product.stock, 10)
                           }
-                          className="rounded-xl bg-green-100 py-2 text-sm font-bold text-green-700 hover:bg-green-200"
+                          className="rounded-lg bg-green-500/10 py-2 text-sm font-bold text-green-300 transition hover:bg-green-500/20"
                         >
                           +10
                         </button>
@@ -492,9 +554,9 @@ export default function Admin() {
                         onClick={() =>
                           toggleProductActive(product.id, product.active)
                         }
-                        className={`mt-3 w-full rounded-xl px-4 py-2 text-sm font-bold ${
+                        className={`mt-3 w-full rounded-lg px-4 py-3 text-sm font-bold transition ${
                           product.active
-                            ? "bg-zinc-950 text-white hover:bg-zinc-800"
+                            ? "bg-zinc-800 text-zinc-100 hover:bg-zinc-700"
                             : "bg-amber-400 text-zinc-950 hover:bg-amber-300"
                         }`}
                       >
@@ -502,14 +564,14 @@ export default function Admin() {
                           ? "Desativar no cardápio"
                           : "Ativar no cardápio"}
                       </button>
-                    </div>
+                    </article>
                   ))}
                 </div>
               </div>
             </section>
           </>
         )}
-      </div>
+      </section>
     </main>
   );
 }
